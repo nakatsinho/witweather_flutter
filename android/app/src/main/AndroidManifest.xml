@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.witweather_flutter">
    <application
-        android:label="witweather_flutter"
+        android:label="Wit Weather"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
