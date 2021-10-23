@@ -19,6 +19,7 @@ class MyApp extends StatelessWidget {
           ThemeData(accentColor: Colors.white, primaryColor: Colors.amber),
       initialRoute: SplashScreen.routeNamed,
       routes: routes,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
