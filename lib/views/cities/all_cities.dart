@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
+import 'package:witweather_flutter/models/city.dart';
 import 'package:witweather_flutter/views/cities/details.dart';
 
 class MainPage extends StatefulWidget {
@@ -9,6 +11,8 @@ class MainPage extends StatefulWidget {
   static String routeNamed = "/MainPage";
 }
 
+final List<City> cities = City.suggestedCities;
+
 class _MainPageState extends State<MainPage> {
   Widget cityItem(String cityName, String countryCode, String imagePath) {
     return Padding(
@@ -18,38 +22,44 @@ class _MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              child: Row(
-                children: [
-                  Hero(
-                      tag: imagePath,
-                      child: Image(
-                        height: 75.0,
-                        width: 75.0,
-                        fit: BoxFit.cover,
-                        image: AssetImage(imagePath),
-                      )),
-                  SizedBox(
-                    width: 10.0,
-                  ),
-                  Column(
-                    children: [
-                      Text(
-                        cityName + " - " + countryCode,
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            fontSize: 20.0),
+              child: Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Hero(
+                        tag: imagePath,
+                        child: Image(
+                          height: 75.0,
+                          width: 75.0,
+                          fit: BoxFit.cover,
+                          image: AssetImage(imagePath),
+                        )),
+                    SizedBox(
+                      width: 10.0,
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: [
+                          Text(
+                            cityName + " - " + countryCode,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 20.0),
+                          ),
+                          Text(
+                            "Min: " + " - " + "Max:",
+                            style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w200,
+                                color: Colors.yellowAccent),
+                          )
+                        ],
                       ),
-                      Text(
-                        "Min: " + " - " + "Max:",
-                        style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w200,
-                            color: Colors.yellowAccent),
-                      )
-                    ],
-                  )
-                ],
+                    )
+                  ],
+                ),
               ),
             ),
             IconButton(
@@ -83,17 +93,18 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: HexColor("#1d7df3"),
       body: Stack(
         fit: StackFit.expand,
         children: [
-          Image.asset(
-            "assets/images/bg_light.png",
-            fit: BoxFit.cover,
-          ),
+          // Image.asset(
+          //   "assets/images/bg_light.png",
+          //   fit: BoxFit.cover,
+          // ),
           ListView(
             children: [
               Padding(
-                padding: EdgeInsets.only(top: 15.0, left: 10.0),
+                padding: EdgeInsets.only(top: 10.0, left: 10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -127,7 +138,7 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
               SizedBox(
-                height: 25.0,
+                height: 5.0,
               ),
               Padding(
                 padding: EdgeInsets.only(left: 40.0),
@@ -137,80 +148,38 @@ class _MainPageState extends State<MainPage> {
                 ),
               ),
               SizedBox(
-                height: 40.0,
+                height: 5.0,
               ),
               Container(
-                // decoration: BoxDecoration(
-                //   color: Colors.white,
-                //   borderRadius: BorderRadius.only(
-                //       topRight: Radius.circular(30.0),
-                //       topLeft: Radius.circular(30.0)),
-                // ),
-                height: MediaQuery.of(context).size.height - 185.0,
+                decoration: BoxDecoration(
+                  // color: HexColor("#0536AD"),
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(30.0),
+                      topLeft: Radius.circular(30.0)),
+                ),
+                height: MediaQuery.of(context).size.height - 85.0,
                 child: ListView(
                   padding: EdgeInsets.only(right: 20.0, left: 25.0),
                   children: [
                     Padding(
                       padding: EdgeInsets.only(top: 48.0),
                       child: Container(
-                        height: MediaQuery.of(context).size.height - 300.0,
-                        child: ListView(
-                          children: [
-                            cityItem("MAPUTO", "MZ", "assets/images/logo.png"),
-                            cityItem("LISBOA", "PT", "assets/images/logo.png"),
-                            cityItem("MADRID", "ES", "assets/images/logo.png"),
-                            cityItem("PARIS", "FR", "assets/images/logo.png"),
-                            cityItem("BERLIM", "NR", "assets/images/logo.png"),
-                          ],
+                        height: MediaQuery.of(context).size.height - 100,
+                        child: ListView.builder(
+                          itemCount: cities.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return cityItem(
+                                cities[index].name.toString(),
+                                cities[index].countryCode.toString(),
+                                "assets/images/logo.png");
+                          },
+                          // children: [
+                          //Text(cities[index].name.toString())
+                          //   cityItem("MAPUTO", "MZ", "assets/images/logo.png"),
+                          // ],
                         ),
                       ),
                     ),
-
-                    //TODO:: I was tryning to add more fetures on Main Page, like Settings, DarkMode, etc
-                    //   Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //     children: [
-                    //       Container(
-                    //         width: 60.0,
-                    //         height: 50.0,
-                    //         decoration: BoxDecoration(
-                    //             border: Border.all(
-                    //                 color: Colors.red,
-                    //                 style: BorderStyle.solid,
-                    //                 width: 1),
-                    //             borderRadius: BorderRadius.circular(14.0)),
-                    //         child: Center(
-                    //           child: Icon(Icons.ac_unit_sharp),
-                    //         ),
-                    //       ),
-                    //       Container(
-                    //         width: 60.0,
-                    //         height: 50.0,
-                    //         decoration: BoxDecoration(
-                    //             border: Border.all(
-                    //                 color: Colors.red,
-                    //                 style: BorderStyle.solid,
-                    //                 width: 1),
-                    //             borderRadius: BorderRadius.circular(14.0)),
-                    //         child: Center(
-                    //           child: Icon(Icons.ac_unit_sharp),
-                    //         ),
-                    //       ),
-                    //       Container(
-                    //         width: 60.0,
-                    //         height: 50.0,
-                    //         decoration: BoxDecoration(
-                    //             border: Border.all(
-                    //                 color: Colors.red,
-                    //                 style: BorderStyle.solid,
-                    //                 width: 1),
-                    //             borderRadius: BorderRadius.circular(14.0)),
-                    //         child: Center(
-                    //           child: Icon(Icons.ac_unit_sharp),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   )
                   ],
                   primary: false,
                 ),
