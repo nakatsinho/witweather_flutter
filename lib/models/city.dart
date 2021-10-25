@@ -1,14 +1,26 @@
 class City {
-  final String? name;
-  final String? countryCode;
-  final String? max;
-  final String? min;
-  final String? imgPath;
+  String? name;
+  String? countryCode;
+  double? max;
+  double? min;
+  String? imgPath;
+  int? dateTime;
+  int? timezone;
 
-  City({this.name, this.countryCode, this.max, this.min, this.imgPath});
+  City(
+      {this.name,
+      this.countryCode,
+      this.max,
+      this.min,
+      this.imgPath,
+      this.dateTime,
+      this.timezone});
 
   static List<City> suggestedCities = [
-    new City(name: "MAPUTO", countryCode: "MOZ",),
+    new City(
+      name: "MAPUTO",
+      countryCode: "MOZ",
+    ),
     new City(name: "LISBOA", countryCode: "PRT"),
     new City(name: "MADRID", countryCode: "ESP"),
     new City(name: "PARIS", countryCode: "FRA"),
@@ -20,6 +32,14 @@ class City {
     new City(name: "PRAGA", countryCode: "CHE"),
     new City(name: "VIENA", countryCode: "AUT"),
   ];
+
+  City.fromJson(Map<String, dynamic> json) {
+    max = json["main"]["temp_max"];
+    min = json["main"]["temp_min"];
+    imgPath = json["weather"][0]["icon"];
+    timezone = json["timezone"];
+    dateTime = json["dt"];
+  }
 }
 
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:witweather_flutter/models/city.dart';
 import 'package:witweather_flutter/views/cities/details.dart';
@@ -14,6 +15,10 @@ class MainPage extends StatefulWidget {
 final List<City> cities = City.suggestedCities;
 
 class _MainPageState extends State<MainPage> {
+  String imageUrl(String urlPath) {
+    return "https://openweathermap.org/img/wn/$urlPath@4x.png";
+  }
+
   Widget cityItem(String cityName, String countryCode, String imagePath) {
     return Padding(
       padding: EdgeInsets.all(10.0),
@@ -97,48 +102,49 @@ class _MainPageState extends State<MainPage> {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Image.asset(
-          //   "assets/images/bg_light.png",
-          //   fit: BoxFit.cover,
-          // ),
+          Image.asset(
+            "assets/images/bg_light.png",
+            fit: BoxFit.cover,
+          ),
           ListView(
             children: [
-              Padding(
-                padding: EdgeInsets.only(top: 10.0, left: 10.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.refresh,
-                          color: Colors.white,
-                        )),
-                    Container(
-                      width: 125.0,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.refresh,
-                                color: Colors.white,
-                              )),
-                          IconButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                Icons.refresh,
-                                color: Colors.white,
-                              )),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
+              // Padding(
+              //   padding: EdgeInsets.only(top: 10.0, left: 10.0),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: [
+              //       IconButton(
+              //           onPressed: () {},
+              //           icon: FaIcon(
+              //             FontAwesomeIcons.windowClose,
+              //             color: Colors.white,
+              //           )),
+              //       Container(
+              //         width: 125.0,
+              //         child: Row(
+              //           crossAxisAlignment: CrossAxisAlignment.end,
+              //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //           children: [
+              //             IconButton(
+              //                 onPressed: () {},
+              //                 icon: FaIcon(
+              //                   FontAwesomeIcons.thermometer,
+              //                   color: Colors.white,
+              //                 )),
+              //             IconButton(
+              //                 onPressed: () {},
+              //                 icon: FaIcon(
+              //                   FontAwesomeIcons.search,
+              //                   color: Colors.white,
+              //                 )),
+              //           ],
+              //         ),
+              //       )
+              //     ],
+              //   ),
+              // ),
               SizedBox(
-                height: 5.0,
+                height: 30.0,
               ),
               Padding(
                 padding: EdgeInsets.only(left: 40.0),

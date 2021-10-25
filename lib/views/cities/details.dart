@@ -1,6 +1,9 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:witweather_flutter/controllers/weathercallapi.dart';
+import 'package:witweather_flutter/models/city.dart';
 import 'package:witweather_flutter/models/coords.dart';
 import 'package:witweather_flutter/models/daily.dart';
 import 'package:witweather_flutter/models/temperature.dart';
@@ -23,16 +26,26 @@ class CityDetails extends StatefulWidget {
 class _CityDetailsState extends State<CityDetails> {
   var selected = "Weight";
   // bool cardTitle = false;
+  var connectivityResult;
+  initState() {
+    super.initState();
+    // connectivityResult = await(Connectivity().checkConnectivity());
+  }
 
   WeatherCallApiClient request = WeatherCallApiClient();
   Temperature? fetchTemp;
   Wind? fetchWind;
   Weather? fetchWeather;
   Daily? fetchDaily;
+  City? fetchCity;
   Coord? fetchCoords;
 
   Future<void> fetchedDataTemp() async {
     fetchTemp = await request.getTemperatureModel(widget.cityName);
+  }
+
+  Future<void> fetchedDataCity() async {
+    fetchCity = await request.getCityModel(widget.cityName);
   }
 
   Future<void> fetchedDataWind() async {
@@ -52,14 +65,16 @@ class _CityDetailsState extends State<CityDetails> {
   }
 
   @override
-  Widget infoCard(String cardTitle, String info, String unit, Icon icon) {
+  Widget infoCard(String cardTitle, String info, String unit, FaIcon icon) {
     return InkWell(
       child: AnimatedContainer(
         duration: Duration(microseconds: 500),
         curve: Curves.easeIn,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10.0),
-            color: cardTitle == selected ? Colors.indigo : Colors.grey.shade200,
+            color: cardTitle == selected
+                ? HexColor("#1d7df3")
+                : Colors.grey.shade200,
             border: Border.all(
                 color: cardTitle == selected
                     ? Colors.transparent
@@ -119,8 +134,22 @@ class _CityDetailsState extends State<CityDetails> {
     });
   }
 
+  String imageUrl(String urlPath) {
+    return "https://openweathermap.org/img/wn/$urlPath@4x.png";
+  }
+
   @override
   Widget build(BuildContext context) {
+    ConnectivityResult? connection;
+
+    final bool connectedM = connection != ConnectivityResult.mobile;
+    final bool connectedW = connection != ConnectivityResult.wifi;
+
+    if (!connectedM && !connectedW) {
+      return Scaffold(
+        body: Center(child: Text("Sem conexao a Internet")),
+      );
+    }
     return Scaffold(
       backgroundColor: HexColor("#1d7df3"),
       appBar: AppBar(
@@ -136,8 +165,13 @@ class _CityDetailsState extends State<CityDetails> {
         elevation: 0.0,
       ),
       body: FutureBuilder(
-        future: Future.wait(
-            [fetchedDataTemp(), fetchedDataWind(), fetchedDataWeather()]),
+        future: Future.wait([
+          fetchedDataTemp(),
+          fetchedDataWind(),
+          fetchedDataWeather(),
+          fetchedDataDaily(),
+          fetchedDataCity()
+        ]),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return ListView(
@@ -176,8 +210,12 @@ class _CityDetailsState extends State<CityDetails> {
                             width: 200.0,
                             height: 200.0,
                             decoration: BoxDecoration(
+                                color: HexColor("#3555ff"),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30)),
                                 image: DecorationImage(
-                                    image: AssetImage(widget.tagHero),
+                                    image: NetworkImage(
+                                        imageUrl("${fetchWeather!.icon}")),
                                     fit: BoxFit.cover)),
                           ),
                         )),
@@ -188,10 +226,26 @@ class _CityDetailsState extends State<CityDetails> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            "Max: ${fetchTemp!.temp}\u00B0 C",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 22.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text(
+                                "Max: ",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20.0),
+                              ),
+                              Text(
+                                "${fetchTemp!.tempMax}\u00B0 C",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 36.0),
+                              ),
+                              Text(
+                                "${fetchWeather!.main}",
+                                style: TextStyle(fontSize: 16.0),
+                              ),
+                            ],
                           ),
                           SizedBox(
                             height: 20.0,
@@ -236,27 +290,30 @@ class _CityDetailsState extends State<CityDetails> {
                               scrollDirection: Axis.horizontal,
                               children: [
                                 infoCard("WIND", "${fetchWind!.speed}", "KM/H",
-                                    Icon(Icons.ac_unit_outlined)),
+                                    FaIcon(FontAwesomeIcons.wind)),
                                 SizedBox(
                                   width: 5.0,
                                 ),
                                 infoCard("SUNRISE", "${fetchDaily!.sunrise}",
-                                    "S", Icon(Icons.person)),
+                                    "", FaIcon(FontAwesomeIcons.sun)),
                                 SizedBox(
                                   width: 5.0,
                                 ),
-                                infoCard("SUNSET", "${fetchDaily!.sunset}", "P",
-                                    Icon(Icons.ac_unit_outlined)),
+                                infoCard("SUNSET", "${fetchDaily!.sunset}", "",
+                                    FaIcon(FontAwesomeIcons.cloudMoon)),
                                 SizedBox(
                                   width: 5.0,
                                 ),
-                                infoCard("PRESSURE", "${fetchTemp!.pressure}",
-                                    "P", Icon(Icons.ac_unit_outlined)),
+                                infoCard(
+                                    "PRESSURE",
+                                    "${fetchTemp!.pressure}",
+                                    "",
+                                    FaIcon(FontAwesomeIcons.temperatureHigh)),
                                 SizedBox(
                                   width: 5.0,
                                 ),
                                 infoCard("HUMIDITY", "${fetchTemp!.humidity}",
-                                    "P", Icon(Icons.ac_unit_outlined)),
+                                    "", FaIcon(FontAwesomeIcons.cloudRain)),
                               ],
                             ),
                           ),
@@ -271,13 +328,14 @@ class _CityDetailsState extends State<CityDetails> {
                                 borderRadius: BorderRadius.only(
                                     topLeft: Radius.circular(10.0),
                                     topRight: Radius.circular(10.0)),
-                                color: Colors.amber,
+                                color: HexColor("#3555ff"),
                               ),
                               child: Center(
-                                child: Text("Quinta Feira, 21 de Outubro 2021",
+                                child: Text("${fetchCity!.timezone}",
                                     style: TextStyle(
                                         fontSize: 16.0,
-                                        fontWeight: FontWeight.w300)),
+                                        fontWeight: FontWeight.w300,
+                                        color: Colors.white)),
                               ),
                             ),
                           )

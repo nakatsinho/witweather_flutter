@@ -1,8 +1,8 @@
 import 'package:witweather_flutter/models/city.dart';
 
 class Daily {
-  String? sunrise;
-  String? sunset;
+  int? sunrise;
+  int? sunset;
   String? country;
 
   Daily({this.sunrise, this.sunset, this.country});
